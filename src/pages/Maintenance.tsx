@@ -6,11 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus } from "lucide-react";
 import { mockMaintenance, mockProperties } from "@/data/mockData";
 import { MaintenanceTask } from "@/types";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const priorities = ['Low', 'Medium', 'High'] as const;
 const maintenanceStatuses = ['Open', 'In Progress', 'Resolved'] as const;
@@ -20,7 +20,6 @@ const priorityColors: Record<string, string> = {
   Medium: 'bg-warning/10 text-warning border-warning/20',
   High: 'bg-destructive/10 text-destructive border-destructive/20',
 };
-
 const statusColors: Record<string, string> = {
   Open: 'bg-destructive/10 text-destructive',
   'In Progress': 'bg-warning/10 text-warning',
@@ -28,17 +27,13 @@ const statusColors: Record<string, string> = {
 };
 
 export default function Maintenance() {
+  const { t } = useLanguage();
   const [tasks, setTasks] = useState<MaintenanceTask[]>(mockMaintenance);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [form, setForm] = useState({
-    property_id: '', description: '', priority: 'Medium' as MaintenanceTask['priority'],
-    assigned_technician: '',
-  });
+  const [form, setForm] = useState({ property_id: '', description: '', priority: 'Medium' as MaintenanceTask['priority'], assigned_technician: '' });
 
   const handleSave = () => {
-    const task: MaintenanceTask = {
-      ...form, id: Date.now().toString(), status: 'Open', created_at: new Date().toISOString(),
-    };
+    const task: MaintenanceTask = { ...form, id: Date.now().toString(), status: 'Open', created_at: new Date().toISOString() };
     setTasks(prev => [...prev, task]);
     setForm({ property_id: '', description: '', priority: 'Medium', assigned_technician: '' });
     setIsDialogOpen(false);
@@ -54,38 +49,35 @@ export default function Maintenance() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Maintenance</h1>
-          <p className="text-muted-foreground mt-1">Track and resolve property issues</p>
+          <h1 className="text-3xl font-bold text-foreground">{t.maintenance.title}</h1>
+          <p className="text-muted-foreground mt-1">{t.maintenance.subtitle}</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button><Plus className="h-4 w-4 mr-2" />Report Issue</Button>
+            <Button><Plus className="h-4 w-4 mr-2" />{t.maintenance.reportIssue}</Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>Report Maintenance Issue</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{t.maintenance.reportMaintenanceIssue}</DialogTitle></DialogHeader>
             <div className="grid gap-4 pt-4">
               <div>
-                <Label>Property</Label>
+                <Label>{t.maintenance.property}</Label>
                 <Select value={form.property_id} onValueChange={v => setForm(f => ({ ...f, property_id: v }))}>
-                  <SelectTrigger><SelectValue placeholder="Select property" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={t.maintenance.selectProperty} /></SelectTrigger>
                   <SelectContent>{mockProperties.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
+              <div><Label>{t.maintenance.issueDescription}</Label><Textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} /></div>
               <div>
-                <Label>Issue Description</Label>
-                <Textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
-              </div>
-              <div>
-                <Label>Priority</Label>
+                <Label>{t.maintenance.priority}</Label>
                 <Select value={form.priority} onValueChange={v => setForm(f => ({ ...f, priority: v as MaintenanceTask['priority'] }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>{priorities.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-              <div><Label>Assigned Technician</Label><Input value={form.assigned_technician} onChange={e => setForm(f => ({ ...f, assigned_technician: e.target.value }))} /></div>
+              <div><Label>{t.maintenance.assignedTechnician}</Label><Input value={form.assigned_technician} onChange={e => setForm(f => ({ ...f, assigned_technician: e.target.value }))} /></div>
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleSave}>Report Issue</Button>
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t.maintenance.cancel}</Button>
+                <Button onClick={handleSave}>{t.maintenance.reportIssue}</Button>
               </div>
             </div>
           </DialogContent>
@@ -97,12 +89,12 @@ export default function Maintenance() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Property</TableHead>
-                <TableHead>Issue</TableHead>
-                <TableHead>Priority</TableHead>
-                <TableHead>Technician</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t.maintenance.property}</TableHead>
+                <TableHead>{t.maintenance.issue}</TableHead>
+                <TableHead>{t.maintenance.priority}</TableHead>
+                <TableHead>{t.maintenance.technician}</TableHead>
+                <TableHead>{t.maintenance.status}</TableHead>
+                <TableHead className="text-right">{t.maintenance.actions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -111,15 +103,11 @@ export default function Maintenance() {
                   <TableCell className="font-medium">{getPropertyName(task.property_id)}</TableCell>
                   <TableCell className="max-w-[200px] truncate">{task.description}</TableCell>
                   <TableCell>
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${priorityColors[task.priority]}`}>
-                      {task.priority}
-                    </span>
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${priorityColors[task.priority]}`}>{task.priority}</span>
                   </TableCell>
                   <TableCell>{task.assigned_technician}</TableCell>
                   <TableCell>
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusColors[task.status]}`}>
-                      {task.status}
-                    </span>
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusColors[task.status]}`}>{task.status}</span>
                   </TableCell>
                   <TableCell className="text-right">
                     <Select value={task.status} onValueChange={v => updateStatus(task.id, v as MaintenanceTask['status'])}>

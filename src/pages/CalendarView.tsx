@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { mockBookings, mockProperties } from "@/data/mockData";
 import { addMonths, subMonths, format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, parseISO, isWithinInterval, isSameDay } from "date-fns";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const bookingColors = [
   'bg-primary/80 text-primary-foreground',
@@ -13,7 +14,8 @@ const bookingColors = [
 ];
 
 export default function CalendarView() {
-  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 2, 1)); // March 2025
+  const { t } = useLanguage();
+  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 2, 1));
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -38,20 +40,16 @@ export default function CalendarView() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Calendar</h1>
-        <p className="text-muted-foreground mt-1">Visual reservation overview</p>
+        <h1 className="text-3xl font-bold text-foreground">{t.calendar.title}</h1>
+        <p className="text-muted-foreground mt-1">{t.calendar.subtitle}</p>
       </div>
 
       <Card className="border shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <Button variant="outline" size="icon" onClick={() => setCurrentMonth(prev => subMonths(prev, 1))}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
+            <Button variant="outline" size="icon" onClick={() => setCurrentMonth(prev => subMonths(prev, 1))}><ChevronLeft className="h-4 w-4" /></Button>
             <CardTitle className="text-xl">{format(currentMonth, 'MMMM yyyy')}</CardTitle>
-            <Button variant="outline" size="icon" onClick={() => setCurrentMonth(prev => addMonths(prev, 1))}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+            <Button variant="outline" size="icon" onClick={() => setCurrentMonth(prev => addMonths(prev, 1))}><ChevronRight className="h-4 w-4" /></Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -72,11 +70,7 @@ export default function CalendarView() {
                       const isCheckIn = isSameDay(day, parseISO(b.check_in));
                       const isCheckOut = isSameDay(day, parseISO(b.check_out));
                       return (
-                        <div
-                          key={b.id}
-                          className={`${b.color} rounded px-1.5 py-0.5 text-[10px] font-medium truncate cursor-pointer hover:opacity-90`}
-                          title={`${b.guest_name} - ${b.propertyName}`}
-                        >
+                        <div key={b.id} className={`${b.color} rounded px-1.5 py-0.5 text-[10px] font-medium truncate cursor-pointer hover:opacity-90`} title={`${b.guest_name} - ${b.propertyName}`}>
                           {isCheckIn ? '→ ' : isCheckOut ? '← ' : ''}{b.guest_name.split(' ')[0]}
                         </div>
                       );
@@ -86,7 +80,6 @@ export default function CalendarView() {
               );
             })}
           </div>
-
           <div className="mt-6 flex flex-wrap gap-4">
             {activeBookings.map(b => (
               <div key={b.id} className="flex items-center gap-2 text-sm">
