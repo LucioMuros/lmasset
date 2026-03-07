@@ -6,7 +6,11 @@ export const localeLabels: Record<Locale, string> = {
   'es': '🇪🇸 Español',
 };
 
-export type TranslationKeys = typeof translations['en'];
+type DeepStringify<T> = {
+  [K in keyof T]: T[K] extends object ? DeepStringify<T[K]> : string;
+};
+
+export type TranslationKeys = DeepStringify<typeof translations['en']>;
 
 export const translations = {
   'en': {
