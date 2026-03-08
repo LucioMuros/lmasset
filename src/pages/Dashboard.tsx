@@ -3,6 +3,7 @@ import { Building2, CalendarDays, DollarSign, TrendingUp, Percent, ArrowUpRight,
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Cell } from "recharts";
 import { mockProperties, mockBookings, mockExpenses, monthlyRevenueData, occupancyData, revenueByProperty } from "@/data/mockData";
 import { useLanguage } from "@/i18n/LanguageContext";
+import RevenueChart from "../components/charts/RevenueChart";
 
 export default function Dashboard() {
   const { t } = useLanguage();
@@ -22,6 +23,9 @@ export default function Dashboard() {
         <h1 className="text-3xl font-bold text-foreground">{t.dashboard.title}</h1>
         <p className="text-muted-foreground mt-1">{t.dashboard.subtitle}</p>
       </div>
+
+      {/* simple revenue chart component included */}
+      <RevenueChart />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {stats.map((stat) => (

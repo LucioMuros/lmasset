@@ -1,4 +1,4 @@
-export interface Property {
+// ...conteúdo original de index.ts...export interface Property {
   id: string;
   name: string;
   address: string;
