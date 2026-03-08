@@ -1,0 +1,33 @@
+name: LMASSET Diagnostics
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: TypeScript Check
+        run: npx tsc --noEmit
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Security Audit
+        run: npm audit
+
+      - name: List Dependencies
+        run: npm list --depth=0
